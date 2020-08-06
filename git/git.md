@@ -19,13 +19,13 @@
 
 + 查看Git版本
 
-```
+```shell
 git version
 ```
 
 + 基本设置
 
-```
+```shell
 #设置全局变量，使用 --global
 #设置用户名
 git config --global user.name "godlegnis"
@@ -39,7 +39,7 @@ git config --global --list
 
 + 获取帮助信息
 
-````
+````shell
 #查看所有可选的命令
 git help
 #查看具体的命令的使用方法
@@ -50,19 +50,24 @@ git help <command>
 
 + 初始化项目，会生成一个.git目录，存储版本库的全部元数据
 
-```
+```shell
 git init
 ```
 
 + 在项目中创建文件，然后将文件添加到版本库的索引，然后提交
 
-```
+```shell
 #创建文件
 touch test.html
 #向版本库添加索引
 git add test.html
 #提交到本地版本库
-git commit "创建了一个html文件"
+git commit -m "创建了一个html文件"
 ```
 
-+ 
++ 修改文件，查看文件状态
+
+```shell
+
+```
+
