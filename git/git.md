@@ -68,6 +68,9 @@ git commit -m "创建了一个html文件"
 + 修改文件，查看文件状态
 
 ```shell
-
+git status
+git add test.html
+git commit -m "更改了文件"
+git log
 ```
 
