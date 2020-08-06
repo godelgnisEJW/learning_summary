@@ -72,7 +72,7 @@ git commit -m "创建了一个html文件"
 git status
 #添加修改，如果要添加所有的修改到缓存区，可以使用git add .
 git add test.html
-#创建提交记录
+#创建提交记录，如果用了`git commit -a`则会提交全部的修改
 git commit -m "更改了文件"
 #查看提交的相关信息
 git log
@@ -91,7 +91,15 @@ git log -2
   ```shell
   #分支命令 `git branch 新分支名称  父分支名称`
   git branch RB_1.0 master
-  
+  #切换分支
+  git checkout RB_1.0
+  ```
+
+
++ 处理发布，打标签
+
+  ```shell
+  git tag 1.0 RB_1.0
   ```
 
   
