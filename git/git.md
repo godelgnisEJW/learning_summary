@@ -93,13 +93,20 @@ git log -2
   git branch RB_1.0 master
   #切换分支
   git checkout RB_1.0
+  #删除分支
+  git branch -d 分支名
+  #强制删除分支
+  git branch -D 分支名
   ```
 
 
 + 处理发布，打标签
 
   ```shell
+  #给RB_1.0的末梢打上2标签
   git tag 1.0 RB_1.0
+  #查看所有的标签
+  git tag
   ```
 
-  
++ 
