@@ -123,7 +123,7 @@ git tag
 
   > `--format`指明要产生tar格式的输出
   >
-  >  `--prefix`指明包中所有东西都放到mysite-1.0/ 目录下
+  > `--prefix`指明包中所有东西都放到mysite-1.0/ 目录下
   >
   > `1.0`指明要归档的标签名称
 
@@ -250,5 +250,184 @@ git tag
 
 + 冲突处理
 
-  > 同一文件的同一文本块以不同的方式修改，并试图合并的时候，会发生冲突，需要人工处理
+  > 同一文件的同一文本块以不同的方式修改，并试图合并的时候，会发生冲突，需要人工处理。
+  >
+  > `<<<<<<<<<`表示本分支的内容，`>>>>>>>>`表示合并过来的分支的内容，`===========`用来分隔两个不同分支的内容。
+  >
+  > 通过`git mergetool`可以使用系统工具来解决冲突，解决之后要通过`git commit`提交
 
++ 删除分支
+
+  > 删除分支的命令
+  >
+  > `git branch -d <branch-name>`和`git branch -D <branch-name>`
+  >
+  > 当分支中的内容没有合并到当前分支时，就会操作失败，需要使用`-D`参数，强制删除
+
++ 分支重命名
+
+  > 分重命名语法
+  >
+  > `git branch -m <old-name> <new-name>`
+  >
+  > 使用参数`-M`将会强制覆盖已经存在的分支
+
+## 查询Git历史
+
++ 查看Git日志
+
+  ```shell
+  #语法
+  git log
+  #查看版本之间代码差异
+  git log -p
+  #查看指定条数的日志
+  git log [-number]
+  #查看指定名称开始的日志
+  git log [-name]
+  ```
+
++ 指定查找范围
+
+  ```shell
+  #查看最近5小时的提交
+  git log --since="5 hours"
+  #查看5小时之前的最后一个提交
+  git log --before="5 hours" -1
+  #类似的格式还有 --ince="24  hours" --since="1 minute" --before="2008-10.01"
+  #查看两个版本之家的提交
+  git log <old-verision-name>..<new-version-name>
+  #查询的日志以只显示名称（哈希值）的缩写和提交留言，与--prety=oneline同等效果
+  git log --pretty=format:"%h %s"
+  #显示18f822e前一个版本到最新版本之间的所有提交
+  git log 18f822e^..HEAD
+  #显示18f822e前10个版本到最新版本之间的所有提交
+  git log 18f822e~10..HEAD
+  ```
+
++ 查看版本之间的差异
+
+  ```shell
+  #指定版本范围的方法与git log一致，差别是git diff输出的是最老和最新版本之间的差异
+  #查看指定版本的与当前版本之间的差异
+  git diff <version-name>
+  #统计版本之间的代码更改量
+  git diff --stat <version-name>
+  ```
+
++ 查明问责
+
+  > `git blame <file-name>`这条命令可以输出文件的更改信息，包括是谁更改了文件，什么时候更改了哪一个位置，以及提交留言
+  >
+  > `git blame -L [start,end] <file-name>`这个命令可以显示特定的开始行和结束行的修改情况
+  >
+  > `git blame -L [start] [+num|-num] <file-name>`有同等效果
+  >
+  > `git blame -L [start,end] <version-name> -- <file-name>`可以查看指定版本范围
+
++ 跟踪内容
+
+  > 在 `git blame` 和 `git log` 的命令后面加上 `-C -C` 参数可以检测文件之间的复制情况 
+  >
+  > `git log -C -C -1 -p` 可以查看详细的变动
+
++ 撤销修改
+
+  > 修改历史的操作只能在变更推入共享版本库之前进行修改，如果推入共享版本库之后再修改历史，其他人在同步时会遇到麻烦。
+  >
+  > 增补提交
+  >
+  > ```shell
+  > # -C 告诉Git复用指定提交的提交留言，而不是从头写一个。使用小写的 -c 会打开编辑器
+  > # 增补提交只能针对最后一个提交
+  > git commit -C HEAD -a --amend
+  > ```
+  >
+  > 反转提交
+  >
+  > ```shell
+  > #反转已经提交的改动，通过在版本库中创建一个“反向的”的新提交来抵消原来提交的改动
+  > #通常Git会提克提交反转结果，运行多个 git revert -n 命令，Git会暂存所有变更
+  > #使用反转提交需要指定提交名称
+  > git revert -n HEAD
+  > git revert -n 540ecb7
+  > #复位一个提交，Git暂存所有因复位带来的差异，但不提交它，好像默认是使用了 --soft
+  > git reset HEAD^ 
+  > #复位一个提交，--hard 选项会从版本库和工作目录中同时删除提交,需要慎重使用
+  > git reset --hard HEAD^
+  > #复位失败，还可以进行回滚
+  > #首先通过reflog查看HEAD记录
+  > git reflog
+  > #然后进行回滚
+  > git reset --hard <version-name>
+  > ```
+  >
+  > 小结：总的来说，回滚操作命令是有使用场景的，这个场景就是我们在写代码，然后已经将更改暂存到缓存区或者已经提交，那么，我们就可以通过回滚操作，将版本库的状态回滚到之前，通过 `--soft` 则是会使提交的更改重新回到暂存区，暂存区的更改回到未暂存的状态，而 --hard 则是会把这些更改全部删除。不过，即使是使用了 `--hard` 进行回滚，误删了之前提交的更改，也可以通过 `git reflog` 查看操作记录，然后再次回滚到正常状态。
+
++ 重新改写历史记录
+
+  > 通过 `git rebase` 命令完成，但是这个功能不常用。
+  >
+  > 它可以对历史提交记录进行重新排序，将多个提交合并成一个提交，将一个大的提交分解成多个提交
+
+## 与远程版本库协作
+
++ Git 网络协议
+
+  + Git 支持的网络协议包括 SSH协议，git自带的网络协议，以及HTTP/HTTPS协议
+  + SSH协议链接以 `git@` 开头， git自带的网络协议的链接则以  `git://` 开头，HTTP/HTTPS协议的链接则以 `http://` 开头。
+
++ 克隆远程版本库
+
+  ```shell
+  git clone git://github.com/your/project/path.git
+  ```
+
++ 版本库同步
+
+  + 远程分支
+
+    ```shell
+    #加上 -r 参数可以查看远程版本库的所有分支
+    git branch -r
+    #可以像检出本地普通分支那样检出远程分支，但是不应该修改分支，如果要修改，就应该先从远程分支创建一个本地分支，，然后再进行修改
+    #创建本地分支的两种方法
+    #1.直接创建分支
+    git branch new-local origin/new
+    #2.先检出到远程分支，再创建本地分支
+    git checkout origin/new
+    git switch -c new-local
+    ```
+  
+  + 同步
+  
+    ```shell
+    #fetch操作可以更新远程分支，但不会将远程分支上的修改合并到本地分支上
+    git fetch
+    #pull操作会完成两件事：取来，然后合并
+    #origin 是默认的远程版本库别名，new则是要拖入的远程分支名
+    git pull origin new
+    ```
+  
++ 推入改动
+
+  > 推入操作是把本地改动推入到上有版本库，以实现共享。
+
+  ```shell
+  #push命令会把更改推入默认的版本库origin中与当前分支相对应的远程分支中
+  git push
+  #加上 --dry-run 参数可以查看推入了哪些提交
+  git push --dry-run
+  #推入指定版本库的指定分支，<repository>可以是网络协议支持的任何URL
+  git push <repository> <refspec>
+  ```
+
++ 添加新的远程版本库
+
+  ```shell
+  #语法：git remote add <name> <repo-url>
+  #origin是默认的版本库名称，可以用其他的别名代替
+  git remote add origin git://ourcompany.com/dev-erin.git 
+  #这个命令可以查看某个远程版本库的详细新消息
+  git remote show <name>
+  ```
