@@ -198,12 +198,24 @@ git clone git://github.com/tswceegood/mysite.gitt mysite-remote
 
 ### 创建分支
 
+#### 创建本地分支
+
 ```shell
 #通过branch命令创建
 git branch <新分支名称> <父分支名称>
 #使用检出命令，一次性完成创建分支并检出该分支
 git checkout -b <新分支名称> <父分支名称>
 ```
+
+#### 创建远程分支
+
+```shell
+#创建远程分支，需要先创建并切换到本地分支，然后再将本地分支推送到远程仓库
+git branch -b new_branch parent_branch
+git push origin new_branch
+```
+
+
 
 ### 合并分支
 
@@ -257,13 +269,23 @@ git checkout -b <新分支名称> <父分支名称>
 
 ### 删除分支
 
-> 删除分支的命令
->
-> `git branch -d <branch-name>`和`git branch -D <branch-name>`
->
-> 当分支中的内容没有合并到当前分支时，就会操作失败，需要使用`-D`参数，强制删除
+#### 删除本地分支
 
-### 分支重命名
+```shell
+#当分支中的内容没有合并到当前分支时，就会操作失败，需要使用`-D`参数，强制删除
+git branch -d <branch-name>
+git branch -D <branch-name>
+```
+
+#### 删除远程分支 
+
+```shell
+git push origin --delete BR_1.0
+```
+
+
+
+#### 分支重命名
 
 > 分重命名语法
 >
